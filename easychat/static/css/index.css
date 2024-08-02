@@ -1,0 +1,20 @@
+.section{
+    height: 100vh;
+    background-image: linear-gradient(to top, #fff1eb 0%, #ace0f9 100%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    text-align: center;
+}
+.chatapp{
+    font-weight: bold;
+    font-size: 20px;
+    color: #167cab;
+    max-width: 400px;
+}
+.btn-chat {
+    color: #fff;
+    background-color: #4690b4;
+    border-color: #4690b4;
+}

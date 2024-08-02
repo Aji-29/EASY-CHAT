@@ -1,0 +1,107 @@
+body{ 
+    background-image: linear-gradient(to top, #fff1eb 0%, #ace0f9 100%);
+}
+
+.chat-box::-webkit-scrollbar {
+    width: 5px;
+  }
+  
+  /* Track */
+  .chat-box::-webkit-scrollbar-track {
+    background: #f1f1f1; 
+  }
+   
+  /* Handle */
+  .chat-box::-webkit-scrollbar-thumb {
+    background: #888; 
+  }
+  
+  /* Handle on hover */
+  .chat-box::-webkit-scrollbar-thumb:hover {
+    background: #555; 
+  }
+.chat-box {
+    height: 70vh;
+    overflow-y: scroll;
+    border: 1px solid #ddd;
+    padding: 10px;
+}
+.chat-message {
+    margin-bottom: 10px;
+}
+.chat-message.user{
+    text-align: right;
+    color: #000; 
+    width: 90%;
+    margin-left: 10%; 
+    display: flex;
+    align-items: center;
+    justify-content: end;
+    gap: 5px;
+}
+.chat-message.user .msg{  
+    padding: 10px 20px;
+    background-color: #f1f1f1;
+    border: 1px solid #e5e0e0; 
+    margin-left: 10%;
+    border-radius: 24px;
+    display: inline-block;
+}
+.chat-message.server {
+    text-align: left;
+    color: #fff;
+    padding: 10px;
+    width: 90%; 
+    display: flex;
+    align-items: center;
+    justify-content: start;
+    gap: 5px;
+}
+.chat-message.server .msg{  
+    padding: 10px 20px;
+    background-color: rgb(7 61 154);
+    border: 1px solid rgb(12 36 79);
+    margin-right: 10%;
+    border-radius: 24px;
+    display: inline-block;
+}
+#username{
+    text-transform: capitalize;
+}
+.user-item{
+    text-transform: capitalize;
+    display: flex;
+    align-items: center;
+    font-size: 14px; 
+}
+.custom-header{
+    background-color: #f1f1f1;
+    padding: 6px 10px;
+    align-items: center;
+    margin-bottom: 20px;
+}
+.logo{
+    font-size: 24px;
+    font-weight: bold;
+}
+#chat-container{
+    height: calc(100vh - 79px);
+}
+.user-item img{
+    width: 35px;
+    margin-right: 10px;
+}
+.chat-message img{
+    width: 20px;
+}
+.userFirstLetter{
+    width: 30px;
+    height: 30px;
+    line-height: 30px;
+    background: #ccccc0;
+    border-radius: 20px;
+    text-align: center;
+    margin-right: 10px;
+    color: #000;
+    font-weight: bold;
+}

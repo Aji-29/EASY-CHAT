@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap/bootstrap.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/chat.css') }}">
+    <link rel="manifest" href="{{ url_for('static', filename='manifest.json') }}">
+    <meta name="theme-color" content="#596f87">
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row custom-header"> 
+            <h2 class="col-8"> <span class="logo">Easychat</span> </h2>
+            <div class="col-4 "><a href="{{ url_for('logout') }}" class="float-right btn btn-danger">Logout</a></div>
+        </div>
+
+        <div class="row" id="chat-container">
+
+            <div class="col-md-3">
+                <p>User List</p>
+                {% if users %}
+                <ul class="list-group">
+                        {% for user in users %}
+                            <li class="list-group-item user-item" data-id="{{ user[0] }}" data-name="{{ user[1] }}">
+                               <span class="userFirstLetter">{{ user[1][0] }}</span> <span> {{ user[1] }}</span>
+                            </li>
+                        {% endfor %}
+                </ul>
+                {% else %} 
+                    <div class="alert alert-info">No users found</div>
+                {% endif %}
+            </div>
+
+            <div class="col-md-9">
+                <div class="card">
+                    <div class="card-header text-center">
+                        <h4> <span id="username">Chat</span></h4>
+                    </div>
+                    <div class="card-body chat-box d-flex flex-column" style="background-image: url({{ url_for('static', filename='img/bg.png') }});background-size: contain;background-color: #596f87;">
+                        <div class="alert alert-info">Select User in Above list</div>
+                    </div>
+                    <div class="card-footer">
+                        <div class="input-group">
+                            <input type="text" id="message-input" class="form-control mr-2" placeholder="Type a message">
+                            <!-- <div class="input-group-append"> -->
+                                <button id="send-button" class="btn btn-success">Send</button>
+                            <!-- </div> -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div> 
+    </div>
+    <!-- jQuery, Bootstrap JS, and Socket.IO -->
+    <script src="{{ url_for('static', filename='js/jquery.min.js') }}"></script> 
+    <script src="{{ url_for('static', filename='js/socket.io.min.js') }}"></script>
+    <script>
+        const socket = io();
+        const userId = "{{ session['user_id'] }}";
+        var roomID = parseInt(userId);
+        let selectedUser = null; 
+
+        // Function to add a message to the chat box
+        function addMessage(message, userType) {
+            message = window.atob(message);
+            if(userType == "server")
+            message = `<img src="{{ url_for('static', filename='img/server.png') }}" /> <span class="msg">`+message+`</span>`;
+            else 
+            message = `<span class="msg">` + message + `</span> <img src="{{ url_for('static', filename='img/user.png') }}" />`;
+            let messageElement = $('<div></div>').addClass('chat-message').addClass(userType).html(message);
+            $('.chat-box').append(messageElement);
+            $('.chat-box').scrollTop($('.chat-box')[0].scrollHeight); // Scroll to bottom
+        }
+
+        // Function to handle sending messages
+        function sendMessage() {
+            let message = $('#message-input').val(); 
+            message = window.btoa(message);
+            if (message.trim() !== '' && selectedUser !== null) {
+                // addMessage(message, 'user');
+                socket.emit('message', { message: message, receiver_id: selectedUser, room: roomID });
+                $('#message-input').val('');
+            }
+        }
+
+        // Event listener for the send button
+        $('#send-button').on('click', sendMessage);
+
+        // Event listener for the enter key
+        $('#message-input').on('keypress', function(e) {
+            if (e.which === 13) {
+                sendMessage();
+            }
+        });
+
+        // Event listener for user selection
+        $('.user-item').on('click', function() {  
+            selectedUser = $(this).data('id');
+            let username = $(this).data('name');
+            $('#username').text(username);
+            $('.user-item').removeClass("active");
+            $(this).addClass("active");
+            $('.chat-box').empty(); // Clear chat box
+            roomID = parseInt(selectedUser * userId);
+            socket.emit('join', { room: roomID }); 
+            socket.emit('get_messages', { receiver_id: selectedUser, room: roomID });
+        });
+
+        // Receive messages from the server
+        socket.on('message', function(data) {
+            let messageClass = data.sender_id == "{{ session['user_id'] }}" ? 'user' : 'server';
+            addMessage(data.message, messageClass);
+        });
+
+        // Receive old messages from the server
+        socket.on('message_history', function(data) {
+            data.history.forEach(function(msg) {
+                console.log(msg.who, userId);
+                if(msg.who == userId){
+                    let messageClass = msg.sender_id == "{{ session['user_id'] }}" ? 'user' : 'server';
+                    addMessage(msg.message, messageClass);
+                }
+            });
+        });
+
+        // Join the chat room using the logged-in user id
+        socket.emit('join', { room: roomID }); 
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function() {
+                navigator.serviceWorker.register('{{ url_for('static', filename='js/service-worker.js') }}')
+                    .then(function(registration) {
+                        console.log('ServiceWorker registration successful with scope: ', registration.scope);
+                    }, function(error) {
+                        console.log('ServiceWorker registration failed: ', error);
+                    });
+            });
+        }
+    </script>
+</body>
+</html>

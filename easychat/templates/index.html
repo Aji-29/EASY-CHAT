@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat Application</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap/bootstrap.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
+    <link rel="manifest" href="{{ url_for('static', filename='manifest.json') }}">
+    <meta name="theme-color" content="#596f87">
+</head>
+<body>
+    <div class="section">
+        <h2>Welcome to the Easychat Application</h2>
+        <p class="mt-1"> <span class="chatapp">Easychat</span> lets you chat effortlessly using just a username, no mobile number needed. <br> Enjoy secure and private conversations with a simple, user-friendly interface.</p> 
+        <a href="{{ url_for('login') }}"><button class="btn btn-chat mt-1">Go To Easychat </button> </a>
+    </div>
+
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function() {
+                navigator.serviceWorker.register('{{ url_for('static', filename='js/service-worker.js') }}')
+                    .then(function(registration) {
+                        console.log('ServiceWorker registration successful with scope: ', registration.scope);
+                    }, function(error) {
+                        console.log('ServiceWorker registration failed: ', error);
+                    });
+            });
+        }
+    </script>
+</body>
+</html>
